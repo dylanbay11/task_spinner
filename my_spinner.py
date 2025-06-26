@@ -11,11 +11,21 @@ app = marimo.App(width="medium")
 
 @app.cell
 def _():
-    import marimo as mo  # notebook requirement
+    import marimo as mo
+    """
+    my_spinner.py
+
+    A marimo applet that will assign you a task from an importance-weighted task list to do.
+    This leverages psychology and neuroscience research, plus the benefits of statistical randomness!
+    It also serves as a fun project to grow familiar with marimo's reactivity.
+
+    Author: Dylan Bay
+    """
 
     #TODO: from random import specific_functions; np too?
     from dataclasses import dataclass
     from enum import Enum
+    from math import isclose
     import random  
     from statistics import mean
     from typing import Optional, List
@@ -26,7 +36,16 @@ def _():
 
     # global presets
     DEFAULT_MULTIPLIERS = {"Critical": 5, "Important": 2, "Maintenance": 1}
-    return DEFAULT_MULTIPLIERS, Enum, List, Optional, alt, dataclass, mo
+    return (
+        DEFAULT_MULTIPLIERS,
+        Enum,
+        List,
+        Optional,
+        alt,
+        dataclass,
+        isclose,
+        mo,
+    )
 
 
 @app.cell
@@ -153,10 +172,11 @@ def _(Priority, Task, tasklist_interactable):
 
 
 @app.cell
-def _(tasklist_current, weighted_categories):
+def _(isclose, tasklist_current, weighted_categories):
     wt_test = weighted_categories(tasklist_current, debug=True)
-    print(sum([wt_task.weight for wt_task in wt_test]))
     wt_test
+    assert (isclose(sum([wt_task.weight for wt_task in wt_test]), 1.0, abs_tol=0.001), 
+            "The total probability must be 1!")
     return
 
 
