@@ -5,7 +5,7 @@
 
 import marimo
 
-__generated_with = "0.14.0"
+__generated_with = "0.14.9"
 app = marimo.App(width="medium")
 
 
@@ -22,17 +22,16 @@ def _():
     Author: Dylan Bay
     """
 
-    #TODO: from random import specific_functions; np too?
     from dataclasses import dataclass
     from enum import Enum
     from math import isclose
-    import random  
+    from random import choices
     from statistics import mean
     from typing import Optional, List
 
     import altair as alt  # visualization
-    import numpy as np    # not needed?
-    import polars as pl   # track results later?
+    # import numpy as np    # not needed?
+    # import polars as pl   # track results later?
 
     # global presets
     DEFAULT_MULTIPLIERS = {"Critical": 5, "Important": 2, "Maintenance": 1}
@@ -52,13 +51,13 @@ def _():
 def _(Enum, Optional, dataclass):
     class Priority(Enum):
         """Task priority level.
-    
+
         Described elsewhere as, roughly:
         CRITICAL: A critical, high-impact, strategic, or time-sensitive task
         IMPORTANT: An important, helpful, or semi-flexible task
         MAINTENANCE: A maintenance or minor task
         """  
-    
+
         CRITICAL = "Critical"
         IMPORTANT = "Important"
         MAINTENANCE = "Maintenance"
@@ -66,17 +65,17 @@ def _(Enum, Optional, dataclass):
     @dataclass
     class Task:
         """A single task with a name (description) and priority (Enum-enforced)"""
-    
+
         name: str
         priority: Priority
 
     @dataclass
     class WeightedTask:
         """A cousin to Task, has a weight assigned and allowed to be a break.
-    
+
         Breaks are priority None, and also have the is_break flag.
         """
-    
+
         name: str
         weight: float
         priority: Optional[Priority]
@@ -93,7 +92,7 @@ def _(DEFAULT_MULTIPLIERS, List, Task, WeightedTask, alt, altair):
         debug: bool = False
     ) -> List[WeightedTask]:
         """Create WeightedTask list from Task list, with a break addition optional.
-    
+
         Note that break_weight is meaningless if include_break is not set.
         break_weight should be between 0 and 1, but will interpret 1 to 99.9 as percentages.
         """
@@ -107,7 +106,7 @@ def _(DEFAULT_MULTIPLIERS, List, Task, WeightedTask, alt, altair):
             break_weight /= 100
         # else 0 < break_weight < 1 as intended
         if debug: print(f"break_weight: {break_weight}")
-        
+
         wtlist: List[WeightedTask] = []
         if include_break:
             wtlist.append(WeightedTask("Break", break_weight, None, True))
@@ -120,7 +119,7 @@ def _(DEFAULT_MULTIPLIERS, List, Task, WeightedTask, alt, altair):
                 t_weight = DEFAULT_MULTIPLIERS[t.priority.value] / total_weight
             if debug: print(f"Appending: {t.name}, {t_weight}, {t.priority}, False")
             wtlist.append(WeightedTask(t.name, t_weight, t.priority, False))
-        
+
         return wtlist
 
     def graph_weights(tlist: List[Task], graph_type: str = "pie") -> alt.Chart:
